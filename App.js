@@ -20,6 +20,8 @@ import Expo from 'expo';
 import {Card} from 'react-native-elements';
 import {StackNavigator, TabNavigator, TabBarBottom} from 'react-navigation';
 import {Col, Row, Grid} from "react-native-easy-grid";
+import Camera from 'react-native-camera';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 import * as firebase from 'firebase'; // 4.10.1
 
@@ -45,6 +47,8 @@ const firebaseConfig = {
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
+
+var storage = firebase.storage();
 
 class CasaScreen extends Component {
   static navigationOptions = {
@@ -905,6 +909,7 @@ class HogarScreen extends Component {
           }} editable={false} ref={component => this._longitud = component}/>
         <TextInput placeholder=" Nombre Familia" style={(styles.input3)} onChangeText={text => this.setState({nombreFamilia: text})}/>
         <Button title='Guardar' color='#28b424' onPress={this.finalizar}/>
+        <Icon name="camera" size={30} color="#900" />
       </ScrollView>
     </View>)
   }
@@ -1006,9 +1011,9 @@ class LoginScreen extends Component {
     }).catch(function(error) {
       var errorCode = error.code;
       if (errorCode === 'auth/wrong-password') {
-        Alert.alert('Error:' + errorCode);
+        Alert.alert('Usuario o contraseña incorrecta');
       } else {
-        Alert.alert('Error:' + errorCode);
+        Alert.alert('Ups! Hubo un error. Intenta de nuevo');
       }
     });
   };
@@ -1048,12 +1053,40 @@ class LoginScreen extends Component {
   }
 }
 
+class CamaraHogarScreen extends Component{
+  render() {
+       return (
+           <Screen>
+               <Camera style={{flex: 1}}
+                       ref={cam => this.camera=cam}
+                       aspect={Camera.constants.Aspect.fill}>
+               </Camera>
+           </Screen>
+       );
+   }
+}
+
+class CamaraPeriScreen extends Component{
+}
+
+class CamaraIntraScreen extends Component{
+}
+
 const Pantallas = StackNavigator({
   Login: {
     screen: LoginScreen
   },
   Inicio: {
     screen: InicioScreen
+  },
+  CamaraHogar: {
+    screen: CamaraHogarScreen
+  },
+  CamaraPeri:{
+    screen: CamaraPeriScreen
+  },
+  CamaraIntra:{
+    screen: CamaraIntraScreen
   },
   Formato: {
     screen: TabNavigator({
@@ -1083,6 +1116,20 @@ const Pantallas = StackNavigator({
 });
 
 const styles = StyleSheet.create({
+  preview: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center'
+  },
+  capture: {
+    flex: 0,
+    backgroundColor: '#fff',
+    borderRadius: 5,
+    padding: 15,
+    paddingHorizontal: 20,
+    alignSelf: 'center',
+    margin: 20
+  },
   container: {
     flex: 1,
     flexDirection: 'column'
